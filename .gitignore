@@ -2,6 +2,7 @@
 *.pdb
 *.idb
 Debug/LucyBot.tlog/unsuccessfulbuild
+SleepyDiscord/*
 *.lastbuildstate
 *.tlog
 *.log
