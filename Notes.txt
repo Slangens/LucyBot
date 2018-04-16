@@ -1,0 +1,49 @@
+
+snowflake, discord_obj_int, error, common_return_types, custom_session, json, 
+permissions, attachment, embed, voice, session
+user
+channel, invite
+message, server, gateway
+webhook
+client
+websocketpp_websocket
+sleepy_discord.h
+
+
+snowflakes: generic object template, different subtypes. 
+privates:
+a string, accessible through X.operator const std::string&(); for comparing things like this, convert to cstring: .c_str(); 
+can be compared to other snowflakes and chars/cstrings.
+
+String--> number type conversions:
+toInt, toLongLong, toUnsignedLong
+also, JSON_getArray makes a string into a json, 
+
+Voice: Voicestate of user, VoiceRegion created from json
+
+Permissions:
+
+users:
+User: "id", "username", "discriminator", "avatar", "bot", "mfa_enabled", "verified", "email" need to be entered as a string vector or json
+ServerUser: "id", "name", "icon", "owner", "permissions"
+Connection to ext. service: "id","name","type", "revoked"
+
+Channels:
+Channel ID; serverID; name; ChannelType; position; permissionOverwrites; topic; Snowflake<Message> lastMessageID; Snowflake<Message> parentID;
+Overwrites(perms)
+
+Invites:
+	code       string                    the invite code (unique ID)
+	guild      a invite guild object     the guild this invite is for
+	channel    a invite channel object   the channel this invite is for
+Inv guild obj:
+	id      snowflake   id of the guild
+	name    string      name of the guild
+	splash  string      hash of the guild splash (or null)
+	icon    string      hash of the guild icon (or null)
+Channel inv obj:
+	id      snowflake	id of the channel
+	name    string      name of the channel
+	type    string      'text' or 'voice'
+	
+	
