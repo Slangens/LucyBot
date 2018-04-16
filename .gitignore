@@ -1,0 +1,13 @@
+
+*.pdb
+*.idb
+Debug/LucyBot.tlog/unsuccessfulbuild
+*.lastbuildstate
+*.tlog
+*.log
+Ref.h
+*.iobj
+*.ipdb
+*.obj
+*.pch
+*.exe
