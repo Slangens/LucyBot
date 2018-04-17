@@ -85,6 +85,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\Release;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,6 +152,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>sleepy_discord.lib;libcurl_a.lib;libcryptoMT.lib;libsslMT.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
