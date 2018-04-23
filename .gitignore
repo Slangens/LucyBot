@@ -12,3 +12,7 @@ Ref.h
 *.obj
 *.pch
 *.exe
+*.ipch
+*.db
+*.opendb
+.vs/LucyBot/v15/.suo
