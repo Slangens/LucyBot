@@ -1,12 +1,7 @@
 // LucyBot.cpp : Defines the entry point for the console application.
 //
 
-//Feature List
-/*
-1)Dynamic server list
 
-
-*/
 
 //Built with MSVSC17
 
