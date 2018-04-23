@@ -16,3 +16,7 @@ Ref.h
 *.db
 *.opendb
 .vs/LucyBot/v15/.suo
+*.lastcodeanalysissucceeded
+Release/LucyBot.pch.codeanalysisast
+Release/stdafx.nativecodeanalysis.xml
+Release/vc.nativecodeanalysis.all.xml
