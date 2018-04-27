@@ -1,8 +1,5 @@
 // LucyBot.cpp : Defines the entry point for the console application.
 //
-
-
-
 //Built with MSVSC17
 
 #include "stdafx.h"  //req by VS17
@@ -11,8 +8,6 @@
 
 
 Ref reference; //contains token, ownerid, server IDs.
-
-
 
 
 struct LucyServer  {
@@ -48,14 +43,6 @@ public:
 	
 };
 
-/*struct LucyChannel {  //Not needed so far
-
-
-	SleepyDiscord::Channel channel;
-	LucyServer parent;
-
-};*/
-
 class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class for the bot, inheritance structure:
 
 															//BaseDiscordClient --> WebsocketppDiscordClient ==typedef in namespace SleepyDiscord== DiscordClient --> LucyClient
@@ -80,6 +67,8 @@ public:
 private:
 	
 };
+
+
 
 int LucyClient::ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID) {
 	int Ind;
@@ -153,10 +142,6 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 		
 	}
 
-
-
-
-
 void LucyClient::onReady(std::string* jsonMessage) {
 	std::cout << "onReady was called." << std::endl;
 
@@ -190,6 +175,15 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 		if (UserMessage.startsWith("-help")) {				//Help command
 			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled");
+		}
+
+		if (UserMessage.isMentioned(reference.ownerid)) {
+			schedule([this, UserMessage]() {
+				if (!(UserMessage.author.ID == reference.ownerid )) {
+					sendMessage(UserMessage.channelID, "Want me to relay something to him?", 1);
+				}
+			}, 5000);
+			
 		}
 
 		if (UserMessage.isMentioned(getCurrentUser().cast())) {
@@ -226,7 +220,6 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 }
 
-
 void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server notices you
 	std::cout << "onServer was called." << std::endl;
 
@@ -242,8 +235,6 @@ void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server
 }
 
 
-
-
 void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyClient& L) {
 
 
@@ -256,6 +247,10 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 
 	//Ask for Server enum
 	for (int u; std::cout << "Enter Server number : " && std::cin >> u; ) {
+		if (u >= int(L.Serverlist.size())) {
+			std::cout << "Choose a valid number." << std::endl;
+			goto end;
+		}
 		std::cout << "The server has been switched to " << L.Serverlist[u].server.name << std::endl;
 
 		//Print Channellist enumerated
@@ -265,13 +260,20 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 		//ask for channel enum on server
 		for (int v; std::cout << "Enter Channel number : " && std::cin >> v; ) {
 
+			if (u >= int(L.Serverlist[u].ChannelList.size())) {
+				std::cout << "Choose a valid number." << std::endl;
+				goto end;
+			}
+
 			CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
 			std::cout << "The channel has been switched to " << L.Serverlist[u].ChannelList[v].name << std::endl;
-			break;
+			goto end;
 		}
-		break;
+
+		
 	}
 
+end:
 	std::cout << "Finishing Channel switch.\n";
 
 
@@ -299,6 +301,10 @@ void CMD(std::string const & line, LucyClient& EL) {
 	else if (line.substr(0, 5) == "!nick") {
 		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())));
 	}
+	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
+		EL.updateStatus(line.substr(8,int(line.length())));
+	}
+	
 	else {
 		EL.sendMessage(EL.CurrentChannel, line, EL.tts);
 	}
@@ -306,16 +312,19 @@ void CMD(std::string const & line, LucyClient& EL) {
 }
 
 
+
 int main() {
 
-	LucyClient Lucy(reference.token, 3);														 //threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue
-																						 //Lucy.run();																	//	dont use if threads=3
+	LucyClient Lucy(reference.token, 3);	//threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue
+																
 	
 
 	for (std::string line; std::cout << "Lucy > " && std::getline(std::cin, line); )
 	{
 		if (!line.empty()) { CMD(line, Lucy); }
 	}
+	
+	
 
 
 	std::cout << "Goodbye.\n";
