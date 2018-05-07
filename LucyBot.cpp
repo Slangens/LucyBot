@@ -343,7 +343,7 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 
 			CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
 			std::cout << "The channel has been switched to " << L.Serverlist[u].ChannelList[v].name << std::endl;
-			
+			goto end;
 		}
 
 		
