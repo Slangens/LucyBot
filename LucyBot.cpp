@@ -106,10 +106,18 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 	SleepyDiscord::Snowflake<SleepyDiscord::Server> A = getChannel(UM.channelID).cast().serverID;
 	std::vector<std::string> userRoles = getMember(A, UM.author).cast().roles;
 	bool hasRole = false;
-	int i = ServerIndex(A);
-	SleepyDiscord::Role ChosenRole = Serverlist[i].ColourList[std::stoi(UM.content)];
+	int i = ServerIndex(A),RoleIndex;
+	
+		try {
+				RoleIndex = std::stoi(UM.content);
 
-			try {
+			if (RoleIndex >= Serverlist[i].ColourList.size()) {
+				sendMessage(UM.channelID, "Please enter a valid index next time.");
+			}
+			else {
+
+
+				SleepyDiscord::Role ChosenRole = Serverlist[i].ColourList[std::stoi(UM.content)];
 
 				//Check if user has role by iterating over all roles and comparing
 				for (int k = 0; k<int(userRoles.size()); k++) {
@@ -122,24 +130,22 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 
 
 				if (hasRole) {			//If user has the role, remove it
-					removeRole( A , UM.author, ChosenRole);
+					removeRole(A, UM.author, ChosenRole);
 					sendMessage(UM.channelID, "I have removed the " + ChosenRole.name + " Role from you.");
 				}
 				else {					//Otherwise add it
-					addRole( A , UM.author, ChosenRole);
+					addRole(A, UM.author, ChosenRole);
 					sendMessage(UM.channelID, "I have given you the " + ChosenRole.name + " Role.");
 				}
 
 				activeColourme = !activeColourme;
 
 			}
-			catch (std::invalid_argument err) {
+	
+		}catch (std::invalid_argument err) {
 				std::cerr << "STD exception in colourgive: " << err.what() << std::endl;
 				sendMessage(UM.channelID, "I said enter a FUCKING NUMBER, dimwit");
-			}
-
-
-
+		}
 		
 	}
 
@@ -369,10 +375,10 @@ void CMD(std::string const & line, LucyClient& EL) {
 		EL.tts = !EL.tts;
 	}
 	else if (line.substr(0, 5) == "!nick") {
-		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-7));
+		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-6));
 	}
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
-		EL.updateStatus(line.substr(8,int(line.length())-9));
+		EL.updateStatus("with her hair"); //line.substr(8,int(line.length())-8)
 	}
 	
 	else {
