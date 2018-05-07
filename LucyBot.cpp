@@ -61,11 +61,12 @@ public:
 	bool tts = false;
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
 	int ServerCount = 0;									//Used to check if all servers have been run through
-	SleepyDiscord::User ColourmeClient;
-	bool activeColourme = false;
+	
 
 private:
-	
+	SleepyDiscord::User ColourmeClient;
+	bool activeColourme = false;
+	bool MomJokeCooldown = false;
 };
 
 
@@ -174,13 +175,46 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		}
 
 		if (UserMessage.startsWith("-help")) {				//Help command
-			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled");
+			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments. \\n -Blurple: ONE OF US");
 		}
+
+		if (( (UserMessage.startsWith("I'm")) || (UserMessage.startsWith("i'm"))) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
+			MomJokeCooldown = true;
+			schedule([this]() {
+				MomJokeCooldown = false;
+			}, 60000);
+
+			if (UserMessage.content.substr(3, 1) == " ") {
+				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(4, int(UserMessage.content.length())-4) + ", I'm mom");
+			}
+			else {
+				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(3, int(UserMessage.content.length())-3) + ", I'm mom");
+			}
+
+			
+
+		}
+
+		if (((UserMessage.startsWith("im")) || (UserMessage.startsWith("Im")) ) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
+			MomJokeCooldown = true;
+			schedule([this]() {
+				MomJokeCooldown = false;
+			}, 60000);
+
+			
+			if (UserMessage.content.substr(2,1) == " ") {
+				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(3, int(UserMessage.content.length())-3) + ", I'm mom");
+			}
+			else {
+				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(2, int(UserMessage.content.length())-2) + ", I'm mom");
+			}
+		}
+
 
 		if (UserMessage.isMentioned(reference.ownerid)) {
 			schedule([this, UserMessage]() {
 				if (!(UserMessage.author.ID == reference.ownerid )) {
-					sendMessage(UserMessage.channelID, "Want me to relay something to him?", 1);
+					sendMessage(UserMessage.channelID, "Want me to relay something to him?", 0);
 				}
 			}, 5000);
 			
@@ -212,6 +246,42 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 
 		}
+
+		//Blurple 426766430986436608
+		if ((UserMessage.startsWith("-Blurple")) || (UserMessage.startsWith("-blurple"))) {
+
+			SleepyDiscord::Role Blurple;
+
+			try{
+			
+				//426766430986436608
+						int I =ServerIndex("271034455462772737");
+						//std::cout << Serverlist[I].server.name << " found." << std::endl;
+						//std::cout << int(Serverlist[I].RoleList.size()) << std::endl;
+						for (int j = 0; j < int(Serverlist[I].RoleList.size()); j++) {
+							//std::cout << Serverlist[I].RoleList[j].name << " | " << std::string(Serverlist[I].RoleList[j].ID) << std::endl;
+							if (Serverlist[I].RoleList[j].name == "Blurple Birthday") {
+								//std::cout << "Blurple found" << std::endl;
+								Blurple = Serverlist[I].RoleList[j];
+							}
+						}
+
+			}catch(std::runtime_error err){
+				std::cerr << err.what() << std::endl;
+			}
+			//std::cout << std::string(Blurple.ID) << std::endl;
+			addRole(getChannel(UserMessage.channelID).cast().serverID ,UserMessage.author.ID, Blurple.ID);
+				
+			sendMessage(UserMessage.channelID , "This is my special attack. You're Blurple now.");
+
+
+
+		}
+
+	/*	if (UserMessage.startsWith("-THANOS") && (UserMessage.author.ID == reference.ownerid)) {
+			int I = ServerIndex("271034455462772737");
+			Serverlist[I].server;
+		}*/
 
 		/*if (UserMessage.startsWith("-ChannelName")) {
 		editChannelName(UserMessage.channelID,);
@@ -299,10 +369,10 @@ void CMD(std::string const & line, LucyClient& EL) {
 		EL.tts = !EL.tts;
 	}
 	else if (line.substr(0, 5) == "!nick") {
-		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())));
+		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-7));
 	}
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
-		EL.updateStatus(line.substr(8,int(line.length())));
+		EL.updateStatus(line.substr(8,int(line.length())-9));
 	}
 	
 	else {
@@ -325,7 +395,7 @@ int main() {
 	}
 	
 	
-
+	
 
 	std::cout << "Goodbye.\n";
 
