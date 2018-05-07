@@ -111,7 +111,7 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 		try {
 				RoleIndex = std::stoi(UM.content);
 
-			if (RoleIndex >= Serverlist[i].ColourList.size()) {
+			if (RoleIndex >= int(Serverlist[i].ColourList.size())) {
 				sendMessage(UM.channelID, "Please enter a valid index next time.");
 			}
 			else {
@@ -336,14 +336,14 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 		//ask for channel enum on server
 		for (int v; std::cout << "Enter Channel number : " && std::cin >> v; ) {
 
-			if (u >= int(L.Serverlist[u].ChannelList.size())) {
+			if (v >= int(L.Serverlist[u].ChannelList.size())) {
 				std::cout << "Choose a valid number." << std::endl;
 				goto end;
 			}
 
 			CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
 			std::cout << "The channel has been switched to " << L.Serverlist[u].ChannelList[v].name << std::endl;
-			goto end;
+			
 		}
 
 		
@@ -399,7 +399,6 @@ int main() {
 	{
 		if (!line.empty()) { CMD(line, Lucy); }
 	}
-	
 	
 	
 
