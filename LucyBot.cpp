@@ -111,7 +111,7 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 		try {
 				RoleIndex = std::stoi(UM.content);
 
-			if (RoleIndex >= int(Serverlist[i].ColourList.size())) {
+			if ((RoleIndex >= int(Serverlist[i].ColourList.size())) || (RoleIndex < 0 )) {
 				sendMessage(UM.channelID, "Please enter a valid index next time.");
 			}
 			else {
@@ -184,11 +184,11 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments. \\n -Blurple: ONE OF US");
 		}
 
-		if (( (UserMessage.startsWith("I'm")) || (UserMessage.startsWith("i'm"))) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
+		/*if (( (UserMessage.startsWith("I'm")) || (UserMessage.startsWith("i'm"))) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
 			MomJokeCooldown = true;
 			schedule([this]() {
 				MomJokeCooldown = false;
-			}, 60000);
+			}, 300000);
 
 			if (UserMessage.content.substr(3, 1) == " ") {
 				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(4, int(UserMessage.content.length())-4) + ", I'm mom");
@@ -205,7 +205,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			MomJokeCooldown = true;
 			schedule([this]() {
 				MomJokeCooldown = false;
-			}, 60000);
+			}, 300000);
 
 			
 			if (UserMessage.content.substr(2,1) == " ") {
@@ -214,7 +214,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			else {
 				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(2, int(UserMessage.content.length())-2) + ", I'm mom");
 			}
-		}
+		}*/
 
 
 		if (UserMessage.isMentioned(reference.ownerid)) {

@@ -3,6 +3,7 @@
 *.idb
 Debug/LucyBot.tlog/unsuccessfulbuild
 SleepyDiscord/*
+SleepyDiscord_stable/*
 *.lastbuildstate
 *.tlog
 *.log
