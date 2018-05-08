@@ -1,4 +1,4 @@
-// LucyBot.cpp : Defines the entry point for the console application.
+﻿// LucyBot.cpp : Defines the entry point for the console application.
 //
 //Built with MSVSC17
 
@@ -279,6 +279,37 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			addRole(getChannel(UserMessage.channelID).cast().serverID ,UserMessage.author.ID, Blurple.ID);
 				
 			sendMessage(UserMessage.channelID , "This is my special attack. You're Blurple now.");
+
+
+
+		}
+
+		if ((UserMessage.startsWith("-BlurpleRemove")) || (UserMessage.startsWith("-blurpleRemove"))) {
+
+			SleepyDiscord::Role Blurple;
+
+			try {
+
+				//426766430986436608
+				int I = ServerIndex("271034455462772737");
+				//std::cout << Serverlist[I].server.name << " found." << std::endl;
+				//std::cout << int(Serverlist[I].RoleList.size()) << std::endl;
+				for (int j = 0; j < int(Serverlist[I].RoleList.size()); j++) {
+					//std::cout << Serverlist[I].RoleList[j].name << " | " << std::string(Serverlist[I].RoleList[j].ID) << std::endl;
+					if (Serverlist[I].RoleList[j].name == "Blurple Birthday") {
+						//std::cout << "Blurple found" << std::endl;
+						Blurple = Serverlist[I].RoleList[j];
+					}
+				}
+
+			}
+			catch (std::runtime_error err) {
+				std::cerr << err.what() << std::endl;
+			}
+			//std::cout << std::string(Blurple.ID) << std::endl;
+			removeRole(getChannel(UserMessage.channelID).cast().serverID, UserMessage.author.ID, Blurple.ID);
+
+			sendMessage(UserMessage.channelID, "This is my STAND, 「O V E R  T H E  R A I N B O W」. You're no longer Blurple.");
 
 
 
