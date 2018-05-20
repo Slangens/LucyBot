@@ -5,6 +5,7 @@
 #include "stdafx.h"  //req by VS17
 #include "sleepy_discord/websocketpp_websocket.h"
 #include "Ref.h"
+#include <random>
 
 
 Ref reference; //contains token, ownerid, server IDs.
@@ -181,7 +182,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		}
 
 		if (UserMessage.startsWith("-help")) {				//Help command
-			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments. \\n -Blurple: ONE OF US");
+			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments, instructions will follow. ");
 		}
 
 		/*if (( (UserMessage.startsWith("I'm")) || (UserMessage.startsWith("i'm"))) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
@@ -254,7 +255,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		}
 
 		//Blurple 426766430986436608
-		if ((UserMessage.startsWith("-Blurple")) || (UserMessage.startsWith("-blurple"))) {
+		/*if ((UserMessage.startsWith("-Blurple")) || (UserMessage.startsWith("-blurple"))) {
 
 			SleepyDiscord::Role Blurple;
 
@@ -313,7 +314,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 
 
-		}
+		}*/
 
 	/*	if (UserMessage.startsWith("-THANOS") && (UserMessage.author.ID == reference.ownerid)) {
 			int I = ServerIndex("271034455462772737");
@@ -372,7 +373,9 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 				goto end;
 			}
 
-			CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
+			L.CurrentChannel = L.Serverlist[u].ChannelList[v];
+
+			//CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
 			std::cout << "The channel has been switched to " << L.Serverlist[u].ChannelList[v].name << std::endl;
 			goto end;
 		}
@@ -409,9 +412,25 @@ void CMD(std::string const & line, LucyClient& EL) {
 		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-6));
 	}
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
-		EL.updateStatus("with her hair"); //line.substr(8,int(line.length())-8)
+		EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
 	}
+	else if (line == "!LEAVE") {
+		if (EL.CurrentChannel.serverID == "271034455462772737") {
+			std::cout << "Can't leave the committee" << std::endl;
+		}
+		else {
+			std::cout << "Are you SURE?" << std::endl;
+			std::cout << "The current serverID is " << std::string(EL.CurrentChannel.serverID) << std::endl;
+			for (std::string line2; std::cout << "Lucy > " && std::getline(std::cin, line2); )
+			{
+				if (line2 == "Yes") {
+					EL.leaveServer(EL.CurrentChannel.serverID);
+				}
+				else break;
+			}
+		}
 	
+	}
 	else {
 		EL.sendMessage(EL.CurrentChannel, line, EL.tts);
 	}
