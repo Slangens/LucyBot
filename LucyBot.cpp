@@ -4,9 +4,9 @@
 
 #include "stdafx.h"  //req by VS17
 #include "sleepy_discord/websocketpp_websocket.h"
+#include "sleepy_discord/voice_connection.h"
 #include "Ref.h"
 #include <random>
-
 
 Ref reference; //contains token, ownerid, server IDs.
 
@@ -52,17 +52,19 @@ public:
 
 	void colourprint(SleepyDiscord::Message UM);
 	void colourgive(SleepyDiscord::Message UM);
-	void onReady(std::string* jsonMessage);
+	void onReady(SleepyDiscord::Ready readyData);
 	void onMessage(SleepyDiscord::Message UserMessage);
 	void onServer(SleepyDiscord::Server server);
 	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
+
+	SleepyDiscord::BaseVoiceEventHandler VCEvent;
 	
 	std::vector<LucyServer> Serverlist;
 	bool Logging = false;
 	bool tts = false;
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
 	int ServerCount = 0;									//Used to check if all servers have been run through
-	
+	SleepyDiscord::Channel OwnerDM;
 
 private:
 	SleepyDiscord::User ColourmeClient;
@@ -150,9 +152,10 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 		
 	}
 
-void LucyClient::onReady(std::string* jsonMessage) {
+void LucyClient::onReady(SleepyDiscord::Ready readyData) {
 	std::cout << "onReady was called." << std::endl;
-
+	//std::cout << std::string(this->getID()) << std::endl;
+	//OwnerDM = this->createDirectMessageChannel(reference.ownerid).cast();
 }
 
 void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines OnMessage event from client.h
@@ -166,10 +169,10 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			sendMessage(UserMessage.channelID, "Hello " + UserMessage.author.username);
 		}
 
-		if (UserMessage.startsWith("Lucy, initiate shutdown") && UserMessage.author.ID == reference.ownerid) {				//if you type "Lucy, initiate shutdown", she shuts down.
+		/*if (UserMessage.startsWith("Lucy, initiate shutdown") && UserMessage.author.ID == reference.ownerid) {				//if you type "Lucy, initiate shutdown", she shuts down.
 			sendMessage(UserMessage.channelID, "Gnight!");
 			quit();
-		}
+		}*/
 
 		if (UserMessage.startsWith("-ping")) {				//ping-pong, implement ping time later.
 			sendMessage(UserMessage.channelID, "pong \\n You sent this at " + UserMessage.timestamp);
@@ -222,6 +225,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			schedule([this, UserMessage]() {
 				if (!(UserMessage.author.ID == reference.ownerid )) {
 					sendMessage(UserMessage.channelID, "Want me to relay something to him?", 0);
+					//sendMessage(OwnerDM,UserMessage.author.username + " pinged you in " + getChannel(UserMessage.channelID).cast().name, 0);
 				}
 			}, 5000);
 			
@@ -321,9 +325,9 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			Serverlist[I].server;
 		}*/
 
-		/*if (UserMessage.startsWith("-ChannelName")) {
-		editChannelName(UserMessage.channelID,);
-		}*/
+		if (UserMessage.startsWith("-ChannelName")) {
+			editChannelName(UserMessage.channelID, UserMessage.content.substr(13, UserMessage.content.length() - 13));
+		}
 	}
 
 }
@@ -405,16 +409,25 @@ void CMD(std::string const & line, LucyClient& EL) {
 	else if (line == "!tl") {
 		EL.Logging = !EL.Logging;
 	}
+	else if (line == "!connect") {
+		//EL.CurrentChannel.ID, EL.Serverlist[EL.ServerIndex(EL.CurrentChannel.serverID)].server,&(EL.VCEvent)
+		std::cout << std::string(EL.CurrentChannel.serverID) << std::endl;
+		SleepyDiscord::VoiceContext A= EL.createVoiceContext(EL.CurrentChannel.ID, EL.CurrentChannel.serverID, &(EL.VCEvent));
+		std::cout << std::string(A.getServerID()) << std::endl;;
+	}
 	else if (line == "!toggle_tts") {
 		EL.tts = !EL.tts;
+	}
+	else if (line == "!checkDM") {
+		std::cout << EL.OwnerDM.type<< " | " << std::string(EL.OwnerDM.ID) << std::endl;
 	}
 	else if (line.substr(0, 5) == "!nick") {
 		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-6));
 	}
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
-		EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
+		EL.updateStatus("with her hair",uint64_t(0),SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
 	}
-	else if (line == "!LEAVE") {
+	/*else if (line == "!LEAVE") {
 		if (EL.CurrentChannel.serverID == "271034455462772737") {
 			std::cout << "Can't leave the committee" << std::endl;
 		}
@@ -430,7 +443,7 @@ void CMD(std::string const & line, LucyClient& EL) {
 			}
 		}
 	
-	}
+	}*/
 	else {
 		EL.sendMessage(EL.CurrentChannel, line, EL.tts);
 	}
@@ -449,8 +462,6 @@ int main() {
 	{
 		if (!line.empty()) { CMD(line, Lucy); }
 	}
-	
-	
 
 	std::cout << "Goodbye.\n";
 
