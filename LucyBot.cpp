@@ -55,10 +55,12 @@ public:
 	void onReady(SleepyDiscord::Ready readyData);
 	void onMessage(SleepyDiscord::Message UserMessage);
 	void onServer(SleepyDiscord::Server server);
+	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);
 	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
 
 	//Voice handlers and contexts
 	SleepyDiscord::BaseVoiceEventHandler VCEvent;
+	SleepyDiscord::VoiceContext VCon = createVoiceContext(getChannel("286853054010097666").cast().ID, getChannel("286853054010097666").cast().serverID, &(VCEvent));
 	
 	std::vector<LucyServer> Serverlist;
 	bool Logging = false;
@@ -347,8 +349,12 @@ void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server
 	);
 }
 
+void LucyClient::onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage) {
+	std::cerr << "Error found: " << errorCode<< ", Message: " << errorMessage << std::endl;
+}
 
-void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyClient& L) {
+
+void ChannelSwitch(LucyClient& L) {
 
 
 	//Print Serverlist enumerated
@@ -381,7 +387,7 @@ void ChannelSwitch(SleepyDiscord::Snowflake<SleepyDiscord::Channel>& CC, LucyCli
 			L.CurrentChannel = L.Serverlist[u].ChannelList[v];
 
 			//CC = L.Serverlist[u].ChannelList[v];		//Set CurrentChannel to the selected one
-			std::cout << "The channel has been switched to " << L.Serverlist[u].ChannelList[v].name << std::endl;
+			std::cout << "The channel has been switched to " << L.CurrentChannel.name  << std::endl;
 			goto end;
 		}
 
@@ -401,7 +407,7 @@ void CMD(std::string const & line, LucyClient& EL) {
 	}
 
 	else if (line == "!cs") {
-		ChannelSwitch(EL.CurrentChannel.ID, EL);
+		ChannelSwitch(EL);
 	}
 
 	else if (line == "!cc") {
@@ -411,10 +417,12 @@ void CMD(std::string const & line, LucyClient& EL) {
 		EL.Logging = !EL.Logging;
 	}
 	else if (line == "!connect") {
-		//EL.CurrentChannel.ID, EL.Serverlist[EL.ServerIndex(EL.CurrentChannel.serverID)].server,&(EL.VCEvent)
 
-		std::cout << std::string(EL.CurrentChannel.serverID) << std::endl;
-		EL.connectToVoiceChannel(EL.CurrentChannel.ID, EL.CurrentChannel.serverID, SleepyDiscord::BaseDiscordClient::normal);
+
+		EL.VCon = EL.createVoiceContext(EL.CurrentChannel.ID, EL.getChannel(EL.CurrentChannel.ID).cast().serverID, &(EL.VCEvent));
+		EL.connectToVoiceChannel(EL.VCon, SleepyDiscord::BaseDiscordClient::normal);
+
+
 
 	}
 	else if (line == "!toggle_tts") {
