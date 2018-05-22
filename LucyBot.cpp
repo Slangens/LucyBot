@@ -57,6 +57,7 @@ public:
 	void onServer(SleepyDiscord::Server server);
 	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
 
+	//Voice handlers and contexts
 	SleepyDiscord::BaseVoiceEventHandler VCEvent;
 	
 	std::vector<LucyServer> Serverlist;
@@ -411,9 +412,10 @@ void CMD(std::string const & line, LucyClient& EL) {
 	}
 	else if (line == "!connect") {
 		//EL.CurrentChannel.ID, EL.Serverlist[EL.ServerIndex(EL.CurrentChannel.serverID)].server,&(EL.VCEvent)
+
 		std::cout << std::string(EL.CurrentChannel.serverID) << std::endl;
-		SleepyDiscord::VoiceContext A= EL.createVoiceContext(EL.CurrentChannel.ID, EL.CurrentChannel.serverID, &(EL.VCEvent));
-		std::cout << std::string(A.getServerID()) << std::endl;;
+		EL.connectToVoiceChannel(EL.CurrentChannel.ID, EL.CurrentChannel.serverID, SleepyDiscord::BaseDiscordClient::normal);
+
 	}
 	else if (line == "!toggle_tts") {
 		EL.tts = !EL.tts;
