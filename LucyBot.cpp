@@ -7,6 +7,8 @@
 #include "sleepy_discord/voice_connection.h"
 #include "Ref.h"
 #include <random>
+#include <iostream>
+#include <fstream>
 
 Ref reference; //contains token, ownerid, server IDs.
 
@@ -60,7 +62,7 @@ public:
 
 	//Voice handlers and contexts
 	SleepyDiscord::BaseVoiceEventHandler VCEvent;
-	SleepyDiscord::VoiceContext VCon = createVoiceContext(getChannel("286853054010097666").cast().ID, getChannel("286853054010097666").cast().serverID, &(VCEvent));
+	//SleepyDiscord::VoiceContext VCon = createVoiceContext(getChannel("286853054010097666").cast().ID, getChannel("286853054010097666").cast().serverID, &(VCEvent));
 	
 	std::vector<LucyServer> Serverlist;
 	bool Logging = false;
@@ -68,6 +70,8 @@ public:
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
 	int ServerCount = 0;									//Used to check if all servers have been run through
 	SleepyDiscord::Channel OwnerDM;
+	std::ofstream PingList;
+
 
 private:
 	SleepyDiscord::User ColourmeClient;
@@ -176,6 +180,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			sendMessage(UserMessage.channelID, "Gnight!");
 			quit();
 		}*/
+		
 
 		if (UserMessage.startsWith("-ping")) {				//ping-pong, implement ping time later.
 			sendMessage(UserMessage.channelID, "pong \\n You sent this at " + UserMessage.timestamp);
@@ -227,8 +232,28 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		if (UserMessage.isMentioned(reference.ownerid)) {
 			schedule([this, UserMessage]() {
 				if (!(UserMessage.author.ID == reference.ownerid )) {
-					sendMessage(UserMessage.channelID, "Want me to relay something to him?", 0);
-					//sendMessage(OwnerDM,UserMessage.author.username + " pinged you in " + getChannel(UserMessage.channelID).cast().name, 0);
+
+					if (!(getMessage(UserMessage.channelID, getChannel(UserMessage.channelID).cast().lastMessageID).cast().author.ID == reference.ownerid)) {
+						
+						sendMessage(UserMessage.channelID, "I have relayed your message to him.", 0);
+						//sendMessage(OwnerDM,UserMessage.author.username + " pinged you in " + getChannel(UserMessage.channelID).cast().name, 0);
+
+						PingList.open("PingList.txt");
+						if (PingList.is_open()) {
+							PingList << "At "
+								<< UserMessage.timestamp
+								<< ", "
+								<< UserMessage.author.username
+								<< "pinged you and said: "
+								<< UserMessage.content
+								<< " in the channel "
+								<< getChannel(UserMessage.channelID).cast().name
+
+								<< std::endl;
+						}
+
+					}
+
 				}
 			}, 5000);
 			
@@ -419,8 +444,8 @@ void CMD(std::string const & line, LucyClient& EL) {
 	else if (line == "!connect") {
 
 
-		EL.VCon = EL.createVoiceContext(EL.CurrentChannel.ID, EL.getChannel(EL.CurrentChannel.ID).cast().serverID, &(EL.VCEvent));
-		EL.connectToVoiceChannel(EL.VCon, SleepyDiscord::BaseDiscordClient::normal);
+		//EL.VCon = EL.createVoiceContext(EL.CurrentChannel.ID, EL.getChannel(EL.CurrentChannel.ID).cast().serverID, &(EL.VCEvent));
+		//EL.connectToVoiceChannel(EL.VCon, SleepyDiscord::BaseDiscordClient::normal);
 
 
 
@@ -432,10 +457,11 @@ void CMD(std::string const & line, LucyClient& EL) {
 		std::cout << EL.OwnerDM.type<< " | " << std::string(EL.OwnerDM.ID) << std::endl;
 	}
 	else if (line.substr(0, 5) == "!nick") {
-		EL.editNickname(EL.CurrentChannel.serverID, line.substr(6, int(line.length())-6));
+		EL.editNickname(EL.getChannel(EL.CurrentChannel.ID).cast().serverID, line.substr(6, int(line.length())-6));
 	}
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
-		EL.updateStatus("with her hair",uint64_t(0),SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
+		
+		EL.updateStatus("with her hair",0,SleepyDiscord::Playing,SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
 	}
 	/*else if (line == "!LEAVE") {
 		if (EL.CurrentChannel.serverID == "271034455462772737") {

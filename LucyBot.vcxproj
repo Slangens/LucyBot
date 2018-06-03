@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\Release;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\Release;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\libsodium\Win32\Release\v141\static;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
