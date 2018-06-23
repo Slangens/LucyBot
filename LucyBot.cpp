@@ -6,12 +6,14 @@
 #include "sleepy_discord/websocketpp_websocket.h"
 #include "sleepy_discord/voice_connection.h"
 #include "Ref.h"
+#include <chrono>
 #include <random>
 #include <iostream>
 #include <fstream>
 
-Ref reference; //contains token, ownerid, server IDs.
+typedef std::uniform_int_distribution<int> unidis;
 
+Ref reference; //contains token, ownerid, server IDs.
 
 struct LucyServer  {
 public:
@@ -42,8 +44,6 @@ public:
 	std::vector<SleepyDiscord::Role> RoleList;
 	std::vector<SleepyDiscord::Role> ColourList;
 	
-
-	
 };
 
 class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class for the bot, inheritance structure:
@@ -51,6 +51,8 @@ class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class 
 															//BaseDiscordClient --> WebsocketppDiscordClient ==typedef in namespace SleepyDiscord== DiscordClient --> LucyClient
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient; 			//sets namespace(?)
+
+	
 
 	void colourprint(SleepyDiscord::Message UM);
 	void colourgive(SleepyDiscord::Message UM);
@@ -60,16 +62,12 @@ public:
 	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);
 	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
 
-	//Voice handlers and contexts
-	SleepyDiscord::BaseVoiceEventHandler VCEvent;
-	//SleepyDiscord::VoiceContext VCon = createVoiceContext(getChannel("286853054010097666").cast().ID, getChannel("286853054010097666").cast().serverID, &(VCEvent));
-	
 	std::vector<LucyServer> Serverlist;
 	bool Logging = false;
 	bool tts = false;
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
 	int ServerCount = 0;									//Used to check if all servers have been run through
-	SleepyDiscord::Channel OwnerDM;
+	
 	std::ofstream PingList;
 
 
@@ -77,6 +75,8 @@ private:
 	SleepyDiscord::User ColourmeClient;
 	bool activeColourme = false;
 	bool MomJokeCooldown = false;
+	std::minstd_rand Chooser;
+	
 };
 
 
@@ -161,8 +161,8 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 
 void LucyClient::onReady(SleepyDiscord::Ready readyData) {
 	std::cout << "onReady was called." << std::endl;
-	//std::cout << std::string(this->getID()) << std::endl;
-	//OwnerDM = this->createDirectMessageChannel(reference.ownerid).cast();
+	unsigned int Seed = std::chrono::system_clock::now().time_since_epoch().count(); //Give RNG its seed
+	Chooser.seed(Seed);
 }
 
 void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines OnMessage event from client.h
@@ -192,41 +192,13 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			sendMessage(UserMessage.channelID, "hi domo virtual Youtuber Kisuna i des", 1);
 		}
 
+		if (UserMessage.startsWith("*patsbots")) {				//Clingy bot command.
+			sendMessage(UserMessage.channelID, "*purrs* \\n I luv u", 0);
+		}
+
 		if (UserMessage.startsWith("-help")) {				//Help command
 			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments, instructions will follow. ");
 		}
-
-		/*if (( (UserMessage.startsWith("I'm")) || (UserMessage.startsWith("i'm"))) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
-			MomJokeCooldown = true;
-			schedule([this]() {
-				MomJokeCooldown = false;
-			}, 300000);
-
-			if (UserMessage.content.substr(3, 1) == " ") {
-				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(4, int(UserMessage.content.length())-4) + ", I'm mom");
-			}
-			else {
-				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(3, int(UserMessage.content.length())-3) + ", I'm mom");
-			}
-
-			
-
-		}
-
-		if (((UserMessage.startsWith("im")) || (UserMessage.startsWith("Im")) ) && (!MomJokeCooldown) && !(UserMessage.channelID == "296130442493689857")) {
-			MomJokeCooldown = true;
-			schedule([this]() {
-				MomJokeCooldown = false;
-			}, 300000);
-
-			
-			if (UserMessage.content.substr(2,1) == " ") {
-				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(3, int(UserMessage.content.length())-3) + ", I'm mom");
-			}
-			else {
-				sendMessage(UserMessage.channelID, "hi " + UserMessage.content.substr(2, int(UserMessage.content.length())-2) + ", I'm mom");
-			}
-		}*/
 
 
 		if (UserMessage.isMentioned(reference.ownerid)) {
@@ -239,7 +211,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 						//sendMessage(OwnerDM,UserMessage.author.username + " pinged you in " + getChannel(UserMessage.channelID).cast().name, 0);
 
 						PingList.open("PingList.txt");
-						if (PingList.is_open()) {
+						if (PingList.is_open()	) {
 							PingList << "At "
 								<< UserMessage.timestamp
 								<< ", "
@@ -286,78 +258,106 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 		}
 
-		//Blurple 426766430986436608
-		/*if ((UserMessage.startsWith("-Blurple")) || (UserMessage.startsWith("-blurple"))) {
-
-			SleepyDiscord::Role Blurple;
-
-			try{
-			
-				//426766430986436608
-						int I =ServerIndex("271034455462772737");
-						//std::cout << Serverlist[I].server.name << " found." << std::endl;
-						//std::cout << int(Serverlist[I].RoleList.size()) << std::endl;
-						for (int j = 0; j < int(Serverlist[I].RoleList.size()); j++) {
-							//std::cout << Serverlist[I].RoleList[j].name << " | " << std::string(Serverlist[I].RoleList[j].ID) << std::endl;
-							if (Serverlist[I].RoleList[j].name == "Blurple Birthday") {
-								//std::cout << "Blurple found" << std::endl;
-								Blurple = Serverlist[I].RoleList[j];
-							}
-						}
-
-			}catch(std::runtime_error err){
-				std::cerr << err.what() << std::endl;
-			}
-			//std::cout << std::string(Blurple.ID) << std::endl;
-			addRole(getChannel(UserMessage.channelID).cast().serverID ,UserMessage.author.ID, Blurple.ID);
-				
-			sendMessage(UserMessage.channelID , "This is my special attack. You're Blurple now.");
-
-
-
-		}
-
-		if ((UserMessage.startsWith("-BlurpleRemove")) || (UserMessage.startsWith("-blurpleRemove"))) {
-
-			SleepyDiscord::Role Blurple;
-
-			try {
-
-				//426766430986436608
-				int I = ServerIndex("271034455462772737");
-				//std::cout << Serverlist[I].server.name << " found." << std::endl;
-				//std::cout << int(Serverlist[I].RoleList.size()) << std::endl;
-				for (int j = 0; j < int(Serverlist[I].RoleList.size()); j++) {
-					//std::cout << Serverlist[I].RoleList[j].name << " | " << std::string(Serverlist[I].RoleList[j].ID) << std::endl;
-					if (Serverlist[I].RoleList[j].name == "Blurple Birthday") {
-						//std::cout << "Blurple found" << std::endl;
-						Blurple = Serverlist[I].RoleList[j];
-					}
-				}
-
-			}
-			catch (std::runtime_error err) {
-				std::cerr << err.what() << std::endl;
-			}
-			//std::cout << std::string(Blurple.ID) << std::endl;
-			removeRole(getChannel(UserMessage.channelID).cast().serverID, UserMessage.author.ID, Blurple.ID);
-
-			sendMessage(UserMessage.channelID, "This is my STAND, 「O V E R  T H E  R A I N B O W」. You're no longer Blurple.");
-
-
-
-		}*/
-
-	/*	if (UserMessage.startsWith("-THANOS") && (UserMessage.author.ID == reference.ownerid)) {
-			int I = ServerIndex("271034455462772737");
-			Serverlist[I].server;
-		}*/
-
+		
 		if (UserMessage.startsWith("-ChannelName")) {
 			editChannelName(UserMessage.channelID, UserMessage.content.substr(13, UserMessage.content.length() - 13));
 		}
 	}
 
+	if (UserMessage.startsWith("-Choose")) { //Initiate choose command.
+		//Parse input to give a vector of strings containing the arguments
+		// User enters: "-Choose \"Des\" \"Pa\" \"Cito\" "
+		std::string input = UserMessage.content.substr(7, UserMessage.content.length() - 7);
+		std::cout << input << std::endl;
+		std::vector<std::string> output;
+		
+		//Method 1: +String methods
+		size_t start=0, end=0;
+		do { // E.g.   input = " \"Des\" \"Pa\" \"Cito\" "
+
+			start = input.find("\"", start) + 1;	// start = 3
+			end = input.find("\"", start); // end = 5
+			std::cout << start<<input[start] <<" until "<< end << input[end]<< std::endl;
+
+			if ((start != std::string::npos) && (end != std::string::npos) && (end > start)) {
+
+				output.push_back(input.substr(start, end - start - 1  )); //new argument is Des
+				std::cout << input.substr(start, end - start - 1) << std::endl;
+			}
+			else { std::cout << "Error. I didn't quite catch that." << std::endl; }
+
+			start = end +1;
+
+
+		} while (!( (start == std::string::npos)||(end == std::string::npos)||(start >=input.size())||(end>=input.size()))); //rinse and repeat until no more quotations remain.
+		
+
+		//Method 2: Cstring iteration, failed
+		/*
+		bool inString = false;
+		std::string argument = "";
+		char ch;
+
+		for (int i = 7; i<int(input.length()); i++) {
+			 ch = input[i];
+			 std::cout << input[i] << std::endl;
+				if (inString) {
+					if (&ch == "\"") {
+						std::cout << argument << std::endl;
+						output.push_back(argument);
+						argument = "";
+						inString = false;
+					}
+					else {
+						if (!(&ch == "\\")) {
+							argument += ch;
+						}
+					}
+				}
+				else {
+					if (&ch == """) {
+						if (argument != "") {
+							std::cout << argument << std::endl;
+							output.push_back(argument);
+							argument = "";
+						}
+						inString = true;
+					}
+					else if (&ch == " ") {
+						if (argument != "") {
+							std::cout << argument << std::endl;
+							output.push_back(argument);
+							argument = "";
+						}
+						
+					}
+					else {
+						if (!(&ch == "\\")) {
+							argument += ch;
+						}
+						
+					}
+				}
+
+		}
+		*/
+
+
+		if (!(& output[0] == nullptr)) {
+			sendMessage(UserMessage.channelID, output[0], 0);
+		}
+
+		//Create uniform distribution of length of the number of arguments
+		//Generate RN according to unidis
+		//return the corresponding argument
+	}
+
+	if (UserMessage.startsWith("Des")) {
+		sendMessage(UserMessage.channelID, "Pa \\n", 0);
+		schedule([this, UserMessage]() {
+		sendMessage(UserMessage.channelID, "Cito \\n", 0);
+		}, 700); //Look up what a lambda body/capture list is
+	}
 }
 
 void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server notices you
@@ -426,60 +426,37 @@ end:
 }
 
 void CMD(std::string const & line, LucyClient& EL) {
-
+//Quitting
 	if (line == "!quit") {
 		EL.quit();
 	}
-
+//Channel Switching
 	else if (line == "!cs") {
 		ChannelSwitch(EL);
 	}
-
+//Returns current channel
 	else if (line == "!cc") {
 		std::cout << "The current channel is " << EL.CurrentChannel.name << ", ID " << &EL.CurrentChannel.ID << std::endl;
 	}
+//Toggle Logging
 	else if (line == "!tl") {
 		EL.Logging = !EL.Logging;
 	}
-	else if (line == "!connect") {
-
-
-		//EL.VCon = EL.createVoiceContext(EL.CurrentChannel.ID, EL.getChannel(EL.CurrentChannel.ID).cast().serverID, &(EL.VCEvent));
-		//EL.connectToVoiceChannel(EL.VCon, SleepyDiscord::BaseDiscordClient::normal);
-
-
-
-	}
+//Toggle Text-to-speech
 	else if (line == "!toggle_tts") {
 		EL.tts = !EL.tts;
 	}
-	else if (line == "!checkDM") {
-		std::cout << EL.OwnerDM.type<< " | " << std::string(EL.OwnerDM.ID) << std::endl;
-	}
+//Change Nickname
 	else if (line.substr(0, 5) == "!nick") {
 		EL.editNickname(EL.getChannel(EL.CurrentChannel.ID).cast().serverID, line.substr(6, int(line.length())-6));
 	}
+//Change status, crashes, no idea why it doesnt work
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
 		
 		EL.updateStatus("with her hair",0,SleepyDiscord::Playing,SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
 	}
-	/*else if (line == "!LEAVE") {
-		if (EL.CurrentChannel.serverID == "271034455462772737") {
-			std::cout << "Can't leave the committee" << std::endl;
-		}
-		else {
-			std::cout << "Are you SURE?" << std::endl;
-			std::cout << "The current serverID is " << std::string(EL.CurrentChannel.serverID) << std::endl;
-			for (std::string line2; std::cout << "Lucy > " && std::getline(std::cin, line2); )
-			{
-				if (line2 == "Yes") {
-					EL.leaveServer(EL.CurrentChannel.serverID);
-				}
-				else break;
-			}
-		}
-	
-	}*/
+
+//If no command is used, send input in current channel as standard message.
 	else {
 		EL.sendMessage(EL.CurrentChannel, line, EL.tts);
 	}
@@ -490,8 +467,7 @@ void CMD(std::string const & line, LucyClient& EL) {
 
 int main() {
 
-	LucyClient Lucy(reference.token, 3);	//threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue
-																
+	LucyClient Lucy(reference.token, 3);	//threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue														
 	
 
 	for (std::string line; std::cout << "Lucy > " && std::getline(std::cin, line); )
