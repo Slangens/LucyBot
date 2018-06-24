@@ -3,6 +3,8 @@
 *.idb
 Debug/LucyBot.tlog/unsuccessfulbuild
 SleepyDiscord/*
+SleepyDiscord_stable/*
+SleepyDiscord2/*
 *.lastbuildstate
 *.tlog
 *.log
@@ -20,3 +22,8 @@ Ref.h
 Release/LucyBot.pch.codeanalysisast
 Release/stdafx.nativecodeanalysis.xml
 Release/vc.nativecodeanalysis.all.xml
+when_youre_high_af.jpg
+animated.agif
+caught in the act.jpg
+Dont let slang read this.txt
+Release/PingList.txt
