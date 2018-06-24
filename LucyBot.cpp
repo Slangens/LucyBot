@@ -343,13 +343,16 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		*/
 
 
-		if (!(& output[0] == nullptr)) {
-			sendMessage(UserMessage.channelID, output[0], 0);
-		}
 
 		//Create uniform distribution of length of the number of arguments
+		unidis Distrib(0, output.size());
+
 		//Generate RN according to unidis
+		int RNG = Distrib(Chooser);
 		//return the corresponding argument
+		if (!(&output[RNG] == nullptr)) {
+			sendMessage(UserMessage.channelID, output[RNG], 0);
+		}
 	}
 
 	if (UserMessage.startsWith("Des")) {
