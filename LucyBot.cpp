@@ -270,89 +270,69 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		std::string input = UserMessage.content.substr(7, UserMessage.content.length() - 7);
 		std::cout << input << std::endl;
 		std::vector<std::string> output;
+		bool write = 0;
 		
-		//Method 1: +String methods
-		size_t start=0, end=0;
-		do { // E.g.   input = " \"Des\" \"Pa\" \"Cito\" "
+		if(input.size() > 2){
+		
+			//Method 1: +String methods
+			size_t start = 0, end = 0;
+			do { // E.g.   input = " \"Des\" \"Pa\" \"Cito\" "
 
-			start = input.find("\"", start) + 1;	// start = 3
-			end = input.find("\"", start); // end = 5
-			std::cout << start<<input[start] <<" until "<< end << input[end]<< std::endl;
+				start = input.find("\"", start) + 1;	// start = 3
+				end = input.find("\"", start); // end = 5
 
-			if ((start != std::string::npos) && (end != std::string::npos) && (end > start)) {
+				std::string option = input.substr(start, end - start - 1);
 
-				output.push_back(input.substr(start, end - start - 1  )); //new argument is Des
-				std::cout << input.substr(start, end - start - 1) << std::endl;
+				if ((start != std::string::npos) && (end != std::string::npos) && (end > start) && !(option.empty())) {
+
+					if ((option == "Write") || (option == "write")) {
+						write = 1;
+						break;
+					}else{
+						output.push_back(option); //new argument is Des
+					}
+					
+					
+					
+				}
+				else { 
+					std::cout << "Error. I didn't quite catch that." << std::endl;
+					sendMessage(UserMessage.channelID, "Would you mind using proper quotation and avoid escaped characters like backslashes? ^_^", 0);
+					break; 
+				}
+
+				start = end + 1;
+
+
+			} while (!((start == std::string::npos) || (end == std::string::npos) || (start >= input.size()) || (end >= input.size()))); //rinse and repeat until no more quotations remain.
+
+			
+
+			 //Create uniform distribution of length of the number of arguments
+			unidis Distrib(0, output.size()-1);
+			
+			//Generate RN according to unidis
+			int RNG = Distrib(Chooser);
+			
+			
+
+			
+			//return the corresponding argument
+			if (output.size() == 1) {
+				sendMessage(UserMessage.channelID,"I guess you really only want one thing...~", 0);
+
 			}
-			else { std::cout << "Error. I didn't quite catch that." << std::endl; }
+			else if (write) {
+				sendMessage(UserMessage.channelID, "Write the fanfic. Do it now.", 0);
+			}else if (!(output[RNG].empty())) {
+				sendMessage(UserMessage.channelID, output[RNG], 0);
 
-			start = end +1;
-
-
-		} while (!( (start == std::string::npos)||(end == std::string::npos)||(start >=input.size())||(end>=input.size()))); //rinse and repeat until no more quotations remain.
-		
-
-		//Method 2: Cstring iteration, failed
-		/*
-		bool inString = false;
-		std::string argument = "";
-		char ch;
-
-		for (int i = 7; i<int(input.length()); i++) {
-			 ch = input[i];
-			 std::cout << input[i] << std::endl;
-				if (inString) {
-					if (&ch == "\"") {
-						std::cout << argument << std::endl;
-						output.push_back(argument);
-						argument = "";
-						inString = false;
-					}
-					else {
-						if (!(&ch == "\\")) {
-							argument += ch;
-						}
-					}
-				}
-				else {
-					if (&ch == """) {
-						if (argument != "") {
-							std::cout << argument << std::endl;
-							output.push_back(argument);
-							argument = "";
-						}
-						inString = true;
-					}
-					else if (&ch == " ") {
-						if (argument != "") {
-							std::cout << argument << std::endl;
-							output.push_back(argument);
-							argument = "";
-						}
-						
-					}
-					else {
-						if (!(&ch == "\\")) {
-							argument += ch;
-						}
-						
-					}
-				}
+			}
 
 		}
-		*/
+		else { sendMessage(UserMessage.channelID, "Error. No arguments given.", 0); }
 
 
-
-		//Create uniform distribution of length of the number of arguments
-		unidis Distrib(0, output.size());
-
-		//Generate RN according to unidis
-		int RNG = Distrib(Chooser);
-		//return the corresponding argument
-		if (!(&output[RNG] == nullptr)) {
-			sendMessage(UserMessage.channelID, output[RNG], 0);
-		}
 	}
 
 	if (UserMessage.startsWith("Des")) {
