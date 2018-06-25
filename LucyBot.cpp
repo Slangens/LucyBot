@@ -69,6 +69,7 @@ public:
 	int ServerCount = 0;									//Used to check if all servers have been run through
 	
 	std::ofstream PingList;
+	std::ifstream Reaction;
 
 
 private:
@@ -437,6 +438,12 @@ void CMD(std::string const & line, LucyClient& EL) {
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
 		
 		EL.updateStatus("with her hair",0,SleepyDiscord::Playing,SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
+	}
+	else if (line.substr(0, 7) == "!upload") {
+		EL.uploadFile(EL.CurrentChannel, line.substr(8,line.length()-8), "[Uploading...]");
+	}
+	else if (line.substr(0, 6) == "!react") {
+		EL.uploadFile(EL.CurrentChannel, "Reactions\\" + line.substr(7, line.length() - 7), " ");
 	}
 
 //If no command is used, send input in current channel as standard message.
