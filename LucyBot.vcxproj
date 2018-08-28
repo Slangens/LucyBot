@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\Release;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\libsodium\Win32\Release\v141\static;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\include;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps\include;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\Release;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -127,13 +127,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;SLEEPY_VOICE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sleepy_discord.lib;libcurl_a.lib;libcryptoMT.lib;libsslMT.lib;crypt32.lib;libsodium.lib;opus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sleepy_discord.lib;libsslMD.lib;libcryptoMD.lib;libcurl_a.lib;libsodium.lib;opus.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
