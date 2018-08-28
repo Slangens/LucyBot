@@ -46,6 +46,19 @@ public:
 	
 };
 
+class LucyVoiceHandler : public SleepyDiscord::BaseVoiceEventHandler {
+
+
+
+public:
+	LucyVoiceHandler() {}
+	void onReady(SleepyDiscord::VoiceConnection& connection) {
+		/*Do stuff when ready to start sending audio*/
+
+	}
+
+};
+
 class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class for the bot, inheritance structure:
 
 															//BaseDiscordClient --> WebsocketppDiscordClient ==typedef in namespace SleepyDiscord== DiscordClient --> LucyClient
@@ -70,6 +83,7 @@ public:
 	
 	std::ofstream PingList;
 	std::ifstream Reaction;
+	LucyVoiceHandler LVH;
 
 
 private:
@@ -115,7 +129,8 @@ void LucyClient::colourprint(SleepyDiscord::Message UM) {
 void LucyClient::colourgive(SleepyDiscord::Message UM) {
 
 	SleepyDiscord::Snowflake<SleepyDiscord::Server> A = getChannel(UM.channelID).cast().serverID;
-	std::vector<std::string> userRoles = getMember(A, UM.author).cast().roles;
+	
+	std::vector<SleepyDiscord::Snowflake<SleepyDiscord::Role>> userRoles = getMember(A, UM.author).cast().roles;
 	bool hasRole = false;
 	int i = ServerIndex(A),RoleIndex;
 	
@@ -271,7 +286,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		std::string input = UserMessage.content.substr(7, UserMessage.content.length() - 7);
 		std::cout << input << std::endl;
 		std::vector<std::string> output;
-		bool write = 0;
+		bool write = 0,eat = 0;
 		
 		if(input.size() > 2){
 		
@@ -289,7 +304,15 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 					if ((option == "Write") || (option == "write")) {
 						write = 1;
 						break;
-					}else{
+					}
+					else if ((option == "meow")||(option == "Meow")) {
+						continue;
+					}
+					else if(option == "eat"){
+						eat = 1;
+						break;
+					}
+					else {
 						output.push_back(option); //new argument is Des
 					}
 					
@@ -325,7 +348,11 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			}
 			else if (write) {
 				sendMessage(UserMessage.channelID, "Write the fanfic. Do it now.", 0);
-			}else if (!(output[RNG].empty())) {
+			}
+			else if (eat) {
+				sendMessage(UserMessage.channelID, "You're too thin. You need f o o d", 0);
+			}
+			else if (!(output[RNG].empty())) {
 				sendMessage(UserMessage.channelID, output[RNG], 0);
 
 			}
@@ -437,13 +464,19 @@ void CMD(std::string const & line, LucyClient& EL) {
 //Change status, crashes, no idea why it doesnt work
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
 		
-		EL.updateStatus("with her hair",0,SleepyDiscord::Playing,SleepyDiscord::online,false); //line.substr(8,int(line.length())-8)
+		EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
 	}
 	else if (line.substr(0, 7) == "!upload") {
 		EL.uploadFile(EL.CurrentChannel, line.substr(8,line.length()-8), "[Uploading...]");
 	}
 	else if (line.substr(0, 6) == "!react") {
-		EL.uploadFile(EL.CurrentChannel, "Reactions\\" + line.substr(7, line.length() - 7), " ");
+		EL.uploadFile(EL.CurrentChannel, "Reactions" + line.substr(7, line.length() - 7), " ");
+	}
+	else if (line == "!connect") {
+		EL.connectToVoiceChannel(EL.CurrentChannel.ID, EL.CurrentChannel.serverID);
+		//EL.connectToVoiceChannel(EL.CurrentChannel,EL.CurrentChannel.serverID,SleepyDiscord::BaseDiscordClient::normal );
+		//std::cout << std::string(EL.getChannel(EL.CurrentChannel).cast().serverID) << " " << EL.getServer(EL.getChannel(EL.CurrentChannel).cast().serverID).cast().name << std::endl;
+		//EL.connectToVoiceChannel(EL.createVoiceContext(EL.CurrentChannel, EL.CurrentChannel.serverID, &EL.LVH), SleepyDiscord::BaseDiscordClient::mute);
 	}
 
 //If no command is used, send input in current channel as standard message.
