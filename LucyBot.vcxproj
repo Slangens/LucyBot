@@ -37,7 +37,6 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -80,13 +79,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\include;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps\include;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\Release;C:\Users\Simon\Documents\LucyBot\Sleepy-Discord\deps\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Repositories\sleepy-discord\include;D:\Repositories\sleepy-discord\deps;D:\Repositories\sleepy-discord\deps\include;D:\Repositories\sleepy-discord\include\sleepy_discord\IncludeNonexistent;D:\Repositories\sleepy-discord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Repositories\sleepy-discord\Release;D:\Repositories\sleepy-discord\deps\lib;D:\Repositories\sleepy-discord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>D:\Repositories\sleepy-discord;D:\Repositories\sleepy-discord\sleepy_discord;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\include;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Simon\Documents\LucyBot\SleepyDiscord\Release;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\lib;C:\Users\Simon\Documents\LucyBot\SleepyDiscord\deps\cpr\opt\curl\builds\libcurl-vc17-x86-release-static-ipv6-sspi-winssl\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Repositories\sleepy-discord\include;D:\Repositories\sleepy-discord\deps;D:\Repositories\sleepy-discord\deps\include;D:\Repositories\sleepy-discord\include\sleepy_discord\IncludeNonexistent;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Repositories\sleepy-discord\Release;D:\Repositories\sleepy-discord\deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,7 +125,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;SLEEPY_VOICE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;SLEEPY_VOICE_ENABLED;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp14</LanguageStandard>
@@ -135,7 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sleepy_discord.lib;libsslMD.lib;libcryptoMD.lib;libcurl_a.lib;libsodium.lib;opus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sleepy_discord.lib;libsslMT.lib;libcryptoMT.lib;libcurl_a.lib;libsodium.lib;opus.lib;crypt32.lib;wldap32.lib;Ws2_32.lib;Normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;SLEEPY_USE_VOICE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -154,7 +154,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sleepy_discord.lib;libcurl_a.lib;libcryptoMT.lib;libsslMT.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sleepy_discord.lib;libcurl.lib;libcryptoMT.lib;libsslMT.lib;libsodium.lib;opus.lib;crypt32.lib;wldap32.lib;Normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

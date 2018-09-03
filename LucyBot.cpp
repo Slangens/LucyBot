@@ -66,20 +66,23 @@ public:
 	using SleepyDiscord::DiscordClient::DiscordClient; 			//sets namespace(?)
 
 	
-
+	//Event handlers
 	void colourprint(SleepyDiscord::Message UM);
 	void colourgive(SleepyDiscord::Message UM);
 	void onReady(SleepyDiscord::Ready readyData);
 	void onMessage(SleepyDiscord::Message UserMessage);
 	void onServer(SleepyDiscord::Server server);
 	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);
-	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
+	void onQuit();
 
+	//Mixed variables
+	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
 	std::vector<LucyServer> Serverlist;
 	bool Logging = false;
 	bool tts = false;
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
-	int ServerCount = 0;									//Used to check if all servers have been run through
+	int ServerCount = 0;									//Used to check if all servers have been run through, used by all kinds of functions, so public
+	
 	
 	std::ofstream PingList;
 	std::ifstream Reaction;
@@ -95,6 +98,8 @@ private:
 };
 
 
+
+//Event redefinitions
 
 int LucyClient::ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID) {
 	int Ind;
@@ -179,27 +184,30 @@ void LucyClient::onReady(SleepyDiscord::Ready readyData) {
 	std::cout << "onReady was called." << std::endl;
 	unsigned int Seed = std::chrono::system_clock::now().time_since_epoch().count(); //Give RNG its seed
 	Chooser.seed(Seed);
+
+
 }
 
 void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines OnMessage event from client.h
+	//If the author of the message isnt Lucy(should be static compare tbh)
 	if (!(UserMessage.author == getCurrentUser().cast())) {
 
 		if (this->Logging) {
 			std::cout << UserMessage.author.username << " said| " << UserMessage.content << " |at " << UserMessage.timestamp << "." << std::endl;
+			
 		}
 
 		if (UserMessage.startsWith("-hello")) {				//if you type whcg hello, the bot greets you.
-			sendMessage(UserMessage.channelID, "Hello " + UserMessage.author.username);
+			sendMessage(UserMessage.channelID, "hello " + UserMessage.author.username + ", what's up");
 		}
 
-		/*if (UserMessage.startsWith("Lucy, initiate shutdown") && UserMessage.author.ID == reference.ownerid) {				//if you type "Lucy, initiate shutdown", she shuts down.
-			sendMessage(UserMessage.channelID, "Gnight!");
-			quit();
-		}*/
+		if (UserMessage.startsWith("Lucy, initiate shutdown") ) {				//if you type "Lucy, initiate shutdown", she shuts down...or does she?
+			sendMessage(UserMessage.channelID, "You think you can get rid of me? Fool.");
+			
+		}
 		
-
 		if (UserMessage.startsWith("-ping")) {				//ping-pong, implement ping time later.
-			sendMessage(UserMessage.channelID, "pong \\n You sent this at " + UserMessage.timestamp);
+			sendMessage(UserMessage.channelID, "Pong! \\n You sent this at " + UserMessage.timestamp);
 			//this->sendHeartbeat();
 
 		}
@@ -208,14 +216,43 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 			sendMessage(UserMessage.channelID, "hi domo virtual Youtuber Kisuna i des", 1);
 		}
 
-		if (UserMessage.startsWith("*patsbots")) {				//Clingy bot command.
+		if (UserMessage.startsWith("*patsbots") && UserMessage.author.ID == reference.ownerid) {				//Clingy bot command.
 			sendMessage(UserMessage.channelID, "*purrs* \\n I luv u", 0);
 		}
 
-		if (UserMessage.startsWith("-help")) {				//Help command
-			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments, instructions will follow. ");
+		if (UserMessage.startsWith("tibbired")) {				//Clingy bot command.
+			sendMessage(UserMessage.channelID, "https://cdn.discordapp.com/attachments/343802646320250882/343802829829308427/sus.gif", 0);
 		}
 
+		if (UserMessage.startsWith("thats what they all say")) {				//Clingy bot command.
+			sendMessage(UserMessage.channelID, "and then they get pregnant", 0);
+		}
+
+	
+
+		if (UserMessage.startsWith("-help")) {				//Help command
+			sendMessage(UserMessage.channelID, "-hello: Makes me greet you \\n -ping: Makes me pong you and show you when you sent your ping \\n -speak: Makes me show you the true meaning of fear, as long as you have tts enabled \\n -colourme: Starts a dialogue that makes me assign a [C] role to you. Use WITHOUT arguments, instructions will follow.\\n Des: find out yourself ;P");
+		}
+
+		if (UserMessage.startsWith("alexa play despacito") || UserMessage.startsWith("Alexa play despacito") ||  UserMessage.startsWith("lucy play despacito") || UserMessage.startsWith("Lucy play despacito")) {
+
+			sendMessage(UserMessage.channelID,"https://www.youtube.com/watch?v=W3GrSMYbkBE");
+		}
+
+		if (UserMessage.startsWith("Welcome to the Committee") && (UserMessage.author.ID == "88575421972516864")) {
+
+			sendMessage("484895888507011098", "F R E S H");
+		}
+
+		if (UserMessage.startsWith("Lucy, what do you think of 216") || UserMessage.startsWith("lucy, what do you think of 216") || UserMessage.startsWith("Lucy, what do you think of 42") || UserMessage.startsWith("lucy, what do you think of 42") || UserMessage.startsWith("Lucy, what do you think of 42cy") || UserMessage.startsWith("lucy, what do you think of 42cy")) {
+
+			sendMessage(UserMessage.channelID, "I don't like her.");
+			sendMessage(UserMessage.channelID, "+hello");
+			schedule([this, UserMessage]() {
+				sendMessage(UserMessage.channelID, "See, she's always this crabby.");
+			}, 2000);
+
+		}
 
 		if (UserMessage.isMentioned(reference.ownerid)) {
 			schedule([this, UserMessage]() {
@@ -248,7 +285,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		}
 
 		if (UserMessage.isMentioned(getCurrentUser().cast())) {
-			sendMessage(UserMessage.channelID, "Hi there~ \\n I hope you have a reason for pinging me though =v=\\n If you need more info on me, try the -help command ;p", 1);
+			sendMessage(UserMessage.channelID,"Is there something?" , 0); //"Hi there~ \\n I hope you have a reason for pinging me though =v=\\n If you need more info on me, try the -help command ;p"
 		}
 
 		if ((UserMessage.startsWith("-colourme")) && (!activeColourme)) {
@@ -275,11 +312,8 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		}
 
 		
-		if (UserMessage.startsWith("-ChannelName")) {
-			editChannelName(UserMessage.channelID, UserMessage.content.substr(13, UserMessage.content.length() - 13));
-		}
 	}
-
+	//Choose function may be used by Lucy as well
 	if (UserMessage.startsWith("-Choose")) { //Initiate choose command.
 		//Parse input to give a vector of strings containing the arguments
 		// User enters: "-Choose \"Des\" \"Pa\" \"Cito\" "
@@ -362,7 +396,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 
 
 	}
-
+	//Despacito
 	if (UserMessage.startsWith("Des")) {
 		sendMessage(UserMessage.channelID, "Pa \\n", 0);
 		schedule([this, UserMessage]() {
@@ -389,6 +423,12 @@ void LucyClient::onError(SleepyDiscord::ErrorCode errorCode, const std::string e
 	std::cerr << "Error found: " << errorCode<< ", Message: " << errorMessage << std::endl;
 }
 
+
+void LucyClient::onQuit() {
+	
+}
+
+//Console functionality
 
 void ChannelSwitch(LucyClient& L) {
 
@@ -447,7 +487,7 @@ void CMD(std::string const & line, LucyClient& EL) {
 	}
 //Returns current channel
 	else if (line == "!cc") {
-		std::cout << "The current channel is " << EL.CurrentChannel.name << ", ID " << &EL.CurrentChannel.ID << std::endl;
+		std::cout << "The current channel is " << EL.CurrentChannel.name << ", ID " << std::string(EL.CurrentChannel.ID) << std::endl;
 	}
 //Toggle Logging
 	else if (line == "!tl") {
@@ -466,6 +506,12 @@ void CMD(std::string const & line, LucyClient& EL) {
 		
 		EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
 	}
+	else if (line == "!error") {
+
+		if (EL.CurrentChannel.type == SleepyDiscord::Channel::ChannelType::SERVER_TEXT) { EL.sendMessage(EL.CurrentChannel, "In the (not uncommon) case that I have misunderstood your question or the social context of it, please consult Slangens \\n Or preferably someone competent.", 0); }
+		else { std::cout << "This is not a text channel." << std::endl; }
+		
+	}
 	else if (line.substr(0, 7) == "!upload") {
 		EL.uploadFile(EL.CurrentChannel, line.substr(8,line.length()-8), "[Uploading...]");
 	}
@@ -479,9 +525,11 @@ void CMD(std::string const & line, LucyClient& EL) {
 		//EL.connectToVoiceChannel(EL.createVoiceContext(EL.CurrentChannel, EL.CurrentChannel.serverID, &EL.LVH), SleepyDiscord::BaseDiscordClient::mute);
 	}
 
-//If no command is used, send input in current channel as standard message.
+//If no command is used, send input in current channel as standard message, if that channel is a text channel.
 	else {
-		EL.sendMessage(EL.CurrentChannel, line, EL.tts);
+		if (EL.CurrentChannel.type == SleepyDiscord::Channel::ChannelType::SERVER_TEXT) { EL.sendMessage(EL.CurrentChannel, line, EL.tts);  }
+		else { std::cout << "This is not a text channel." << std::endl; }
+		
 	}
 
 }
