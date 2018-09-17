@@ -11,10 +11,12 @@
 #include <iostream>
 #include <fstream>
 
-typedef std::uniform_int_distribution<int> unidis;
+typedef std::uniform_int_distribution<int> unidis;									//Uniform distribution, used for Choose function
+typedef std::array < std::array < std::vector < std::string >, 31 >, 12 > BDarr;	//Container for Birthday names
 
 Ref reference; //contains token, ownerid, server IDs.
 
+//Improvement upon the server object structure, might be inefficient
 struct LucyServer  {
 public:
 	LucyServer() {}
@@ -46,6 +48,7 @@ public:
 	
 };
 
+//Voice event handler needed for activity in VC
 class LucyVoiceHandler : public SleepyDiscord::BaseVoiceEventHandler {
 
 
@@ -59,6 +62,7 @@ public:
 
 };
 
+//Client class, inheriting from BaseDiscordClient from client.h
 class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class for the bot, inheritance structure:
 
 															//BaseDiscordClient --> WebsocketppDiscordClient ==typedef in namespace SleepyDiscord== DiscordClient --> LucyClient
@@ -78,29 +82,42 @@ public:
 	//Mixed variables
 	int ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID);
 	std::vector<LucyServer> Serverlist;
+	BDarr BirthdayArray;  //Array of depth 12 containing arrays of depth 31, each containing a vector of strings. No elements need to be added to the array, just the vectors.
 	bool Logging = false;
 	bool tts = false;
 	SleepyDiscord::Channel CurrentChannel=getChannel("286853054010097666");
 	int ServerCount = 0;									//Used to check if all servers have been run through, used by all kinds of functions, so public
 	
-	
-	std::ofstream PingList;
-	std::ifstream Reaction;
-	LucyVoiceHandler LVH;
-
 
 private:
 	SleepyDiscord::User ColourmeClient;
 	bool activeColourme = false;
 	bool MomJokeCooldown = false;
 	std::minstd_rand Chooser;
-	
+
+	std::ofstream PingList;
+	std::ifstream BirthdayInput;
+	LucyVoiceHandler LVH;
 };
 
 
+void BirthdayLoad(BDarr& BirthdayList, std::ifstream& Input) {
+	try {
+		Input.open("Birthdays.txt");
+		if (Input.is_open()) {
+			std::cout << "Birthday file opened." << std::endl;
+
+		}
+		else { std::cerr << "File could not be opened." << std::endl; }
+	}
+	catch (std::ios_base::failure FileNotFound) {
+		std::cerr << "Error code " << FileNotFound.code() << " , " << FileNotFound.what() << std::endl;
+	}
+}
 
 //Event redefinitions
 
+//Finds the enumerator of a given server in the array of servers --> inefficient
 int LucyClient::ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> ServerID) {
 	int Ind;
 	for (int k = 0; k<int(Serverlist.size()); k++) {
@@ -112,6 +129,7 @@ int LucyClient::ServerIndex(SleepyDiscord::Snowflake<SleepyDiscord::Server> Serv
 	return Ind;
 }
 
+//Prints colours in chat
 void LucyClient::colourprint(SleepyDiscord::Message UM) {
 
 	std::string ColourPrint;
@@ -131,6 +149,7 @@ void LucyClient::colourprint(SleepyDiscord::Message UM) {
 
 }
 
+//Gives the current person using colourme the colour they want
 void LucyClient::colourgive(SleepyDiscord::Message UM) {
 
 	SleepyDiscord::Snowflake<SleepyDiscord::Server> A = getChannel(UM.channelID).cast().serverID;
@@ -180,15 +199,20 @@ void LucyClient::colourgive(SleepyDiscord::Message UM) {
 		
 	}
 
+//Executed on finishing the connection to Discord
 void LucyClient::onReady(SleepyDiscord::Ready readyData) {
 	std::cout << "onReady was called." << std::endl;
 	unsigned int Seed = std::chrono::system_clock::now().time_since_epoch().count(); //Give RNG its seed
 	Chooser.seed(Seed);
-
+	
+	//Read in Birthday list
+	BirthdayLoad(BirthdayArray, BirthdayInput);
 
 }
 
-void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines OnMessage event from client.h
+//Executed when a message is received by the client
+void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		
+	//redefines OnMessage event from client.h
 	//If the author of the message isnt Lucy(should be static compare tbh)
 	if (!(UserMessage.author == getCurrentUser().cast())) {
 
@@ -242,6 +266,10 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 		if (UserMessage.startsWith("Welcome to the Committee") && (UserMessage.author.ID == "88575421972516864")) {
 
 			sendMessage("484895888507011098", "F R E S H");
+		}
+
+		if (UserMessage.startsWith("Is this loss") || UserMessage.startsWith("is this loss")) {
+			sendMessage(UserMessage.channelID,"No, this is Lucy :>",0);
 		}
 
 		if (UserMessage.startsWith("Lucy, what do you think of 216") || UserMessage.startsWith("lucy, what do you think of 216") || UserMessage.startsWith("Lucy, what do you think of 42") || UserMessage.startsWith("lucy, what do you think of 42") || UserMessage.startsWith("Lucy, what do you think of 42cy") || UserMessage.startsWith("lucy, what do you think of 42cy")) {
@@ -405,6 +433,7 @@ void LucyClient::onMessage(SleepyDiscord::Message UserMessage) { 		//redefines O
 	}
 }
 
+//Executed when a server is registered or re-registered
 void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server notices you
 	std::cout << "onServer was called." << std::endl;
 
@@ -419,19 +448,21 @@ void LucyClient::onServer(SleepyDiscord::Server server) {				//OwO when a server
 	);
 }
 
+//Executed on receiving an error from the client
 void LucyClient::onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage) {
 	std::cerr << "Error found: " << errorCode<< ", Message: " << errorMessage << std::endl;
 }
 
-
+//Executed on disconnect
 void LucyClient::onQuit() {
 	
 }
 
 //Console functionality
 
+//Needs revamp, god why are there gotos
 void ChannelSwitch(LucyClient& L) {
-
+	
 
 	//Print Serverlist enumerated
 
@@ -476,7 +507,10 @@ end:
 
 }
 
+//Needs complete revamp, else ifs are inefficient
 void CMD(std::string const & line, LucyClient& EL) {
+	
+
 //Quitting
 	if (line == "!quit") {
 		EL.quit();
