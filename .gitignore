@@ -1,36 +1,11 @@
-
-*.pdb
-*.idb
-Debug/LucyBot.tlog/unsuccessfulbuild
-SleepyDiscord/*
-SleepyDiscord_stable/*
-SleepyDiscord2/*
-*.lastbuildstate
-*.tlog
-*.log
+LucyExec
 Ref.h
-*.iobj
-*.ipdb
-*.obj
-*.pch
-*.exe
-*.ipch
-*.db
-*.opendb
-.vs/LucyBot/v15/.suo
-*.lastcodeanalysissucceeded
-Release/LucyBot.pch.codeanalysisast
-Release/stdafx.nativecodeanalysis.xml
-Release/vc.nativecodeanalysis.all.xml
-when_youre_high_af.jpg
-animated.agif
-caught in the act.jpg
-Dont let slang read this.txt
-Release/PingList.txt
-Release/TaC.mp3
-SJ8I2Tuv-.gif
-sleepy-discord/
-Ref.h
-Release/WordList.txt
-Birthday.h
-Birthday.cpp
+CmakeLists (copy 1).txt
+stdafx.h
+stdafx.cpp
+Test.cpp
+/Test (copy 1).cpp
+unfriended.png
+/Release/
+/build/
+/.vscode/

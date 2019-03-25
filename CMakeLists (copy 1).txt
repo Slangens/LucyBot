@@ -1,0 +1,46 @@
+cmake_minimum_required (VERSION 3.10 FATAL_ERROR)    #requirements
+project(LucyProject CXX)                    #project name
+set(SLEEPY_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../sleepy-discord"
+CACHE PATH "The path to the SleepyDiscord Library source.")
+
+set(TOKEN \"NDMyOTYwMzgxOTU1MjExMjY0.Da05lg.CmAtXI73GKeoWmbArEVQrOT4gUM\")  #global variables
+set(OWNERID \"251121149981884423\")
+                                        #options
+
+configure_file (                        #pass CMake settings to Project headers
+    "${PROJECT_SOURCE_DIR}/Ref_upload.h" #template
+    "${PROJECT_SOURCE_DIR}/Ref.h"    #target
+)                                        
+
+#target_include_directories(Lucy"${PROJECT_SOURCE_DIR}") #set include directory
+#include_directories() just gives locations where to look for headers
+
+#-I ../../include -I ../../deps -I ../../deps/include -I ../../include/sleepy_discord/IncludeNonexistent
+
+#include_directories ("${PROJECT_SOURCE_DIR}/../sleepy-discord")     #Library headers
+
+
+include_directories("${PROJECT_SOURCE_DIR}/../sleepy-discord/include"                  
+"${PROJECT_SOURCE_DIR}/../sleepy-discord/deps" 
+"${PROJECT_SOURCE_DIR}/../sleepy-discord/deps/include" 
+"${PROJECT_SOURCE_DIR}/../sleepy-discord/include/sleepy_discord/IncludeNonexistent")
+#"${PROJECT_SOURCE_DIR}/../sleepy-discord/" )    
+                    
+                   
+
+                   
+add_subdirectory ("${SLEEPY_SOURCE_DIR}" "${SLEEPY_SOURCE_DIR}/build")                #adds library compilation                     
+
+
+#add_subdirectory() though adds new stuff to compile, namely by the keyword. It then looks in the include directories for the CMakeLists.txt that defines the keyword.
+#set(EXTRA_LIBS ${EXTRA_LIBS} MathFunctions)
+
+#add_subdirectory("${PROJECT_SOURCE_DIR}/../sleepy-discord" "${PROJECT_SOURCE_DIR}/../sleepy-discord/build" EXCLUDE_FROM_ALL )
+
+add_executable(LucyExec LucyBot.cpp)   #executable target
+
+
+#target_link_libraries (LucyExec sleepy-discord)  #link against Library
+target_link_libraries (LucyExec "${SLEEPY_SOURCE_DIR}/build/sleepy_discord/libsleepy-discord.a") # "${SLEEPY_SOURCE_DIR}/build/lib/libcurl.a" "${SLEEPY_SOURCE_DIR}/build/lib/libcpr.a" )  #link against Library
+
+

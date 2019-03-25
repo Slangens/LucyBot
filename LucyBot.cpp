@@ -2,9 +2,11 @@
 //
 //Built with MSVSC17
 
-#include "stdafx.h"  //req by VS17
+//#include "stdafx.h"  //req by VS17
 #include "sleepy_discord/websocketpp_websocket.h"
+#ifdef SLEEPY_VOICE_ENABLED
 #include "sleepy_discord/voice_connection.h"
+#endif
 #include "Ref.h"
 #include <chrono>
 #include <random>
@@ -48,11 +50,9 @@ public:
 	
 };
 
+#ifdef SLEEPY_VOICE_ENABLED
 //Voice event handler needed for activity in VC
 class LucyVoiceHandler : public SleepyDiscord::BaseVoiceEventHandler {
-
-
-
 public:
 	LucyVoiceHandler() {}
 	void onReady(SleepyDiscord::VoiceConnection& connection) {
@@ -61,6 +61,7 @@ public:
 	}
 
 };
+#endif
 
 //Client class, inheriting from BaseDiscordClient from client.h
 class LucyClient : public SleepyDiscord::DiscordClient { 	//create client class for the bot, inheritance structure:
@@ -97,7 +98,8 @@ private:
 
 	std::ofstream PingList;
 	std::ifstream BirthdayInput;
-	LucyVoiceHandler LVH;
+	
+	//LucyVoiceHandler LVH;
 };
 
 
@@ -538,7 +540,7 @@ void CMD(std::string const & line, LucyClient& EL) {
 //Change status, crashes, no idea why it doesnt work
 	else if (line.substr(0,7)=="!status") {						//Doesnt work...Why?
 		
-		EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
+		//EL.updateStatus("with her hair",0,SleepyDiscord::online,0); //line.substr(8,int(line.length())-8)
 	}
 	else if (line == "!error") {
 
@@ -552,12 +554,14 @@ void CMD(std::string const & line, LucyClient& EL) {
 	else if (line.substr(0, 6) == "!react") {
 		EL.uploadFile(EL.CurrentChannel, "Reactions" + line.substr(7, line.length() - 7), " ");
 	}
+	#ifdef SLEEPY_VOICE_ENABLED
 	else if (line == "!connect") {
-		EL.connectToVoiceChannel(EL.CurrentChannel.ID, EL.CurrentChannel.serverID);
+		//EL.connectToVoiceChannel(EL.CurrentChannel.ID, EL.CurrentChannel.serverID);
 		//EL.connectToVoiceChannel(EL.CurrentChannel,EL.CurrentChannel.serverID,SleepyDiscord::BaseDiscordClient::normal );
 		//std::cout << std::string(EL.getChannel(EL.CurrentChannel).cast().serverID) << " " << EL.getServer(EL.getChannel(EL.CurrentChannel).cast().serverID).cast().name << std::endl;
 		//EL.connectToVoiceChannel(EL.createVoiceContext(EL.CurrentChannel, EL.CurrentChannel.serverID, &EL.LVH), SleepyDiscord::BaseDiscordClient::mute);
 	}
+	#endif
 
 //If no command is used, send input in current channel as standard message, if that channel is a text channel.
 	else {
