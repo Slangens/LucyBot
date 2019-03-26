@@ -9,3 +9,7 @@ unfriended.png
 /Release/
 /build/
 /.vscode/
+LucyBot_old.cpp
+Ref.hpp
+ServerList.hpp
+CMakeLists2.txt
