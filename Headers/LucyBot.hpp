@@ -11,19 +11,21 @@ public:
 
 	
 	//Event handlers
-	/*void onReady(SleepyDiscord::Ready readyData);
-	void onMessage(SleepyDiscord::Message UserMessage);
+	/*void onMessage(SleepyDiscord::Message UserMessage);
+	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);*/
+	void onReady(SleepyDiscord::Ready readyData);
 	void onServer(SleepyDiscord::Server server);
-	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);
-	void onQuit();*/
-	void LucyMessaging(std::string const& message);
-
+	//void onQuit();
+	void ChannelSwitch();
+	void SafeMessaging(std::string const& message);
+	void ServerSwitch();
+	void CMD(std::string const& input);
     
-	
+
+	std::vector<SleepyDiscord::Server> ServerList;							//Should this be public/private? Should be private for security
 
 private:
-	bool tts {0};
+	bool tts;
 	SleepyDiscord::Channel CurrentChannel {getChannel("286853054010097666")};
+	SleepyDiscord::Server CurrentServer {getServer("271034455462772737")};
 };
-
-void CMD(std::string const& input,LucyClient& EL);
