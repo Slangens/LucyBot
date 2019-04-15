@@ -15,17 +15,21 @@ public:
 	void onError(SleepyDiscord::ErrorCode errorCode, const std::string errorMessage);*/
 	void onReady(SleepyDiscord::Ready readyData);
 	void onServer(SleepyDiscord::Server server);
+	std::string Choose(std::string& userInput);
+	void onMessage(SleepyDiscord::Message userMessage);
 	//void onQuit();
-	void ChannelSwitch();
 	void SafeMessaging(std::string const& message);
+	void ChannelSwitch();
 	void ServerSwitch();
 	void CMD(std::string const& input);
     
 
-	std::vector<SleepyDiscord::Server> ServerList;							//Should this be public/private? Should be private for security
 
 private:
 	bool tts;
+	std::vector<SleepyDiscord::Server> ServerList;							//Should this be public/private? Should be private for security
 	SleepyDiscord::Channel CurrentChannel {getChannel("286853054010097666")};
-	SleepyDiscord::Server CurrentServer {getServer("271034455462772737")};
+	SleepyDiscord::Server CurrentServer;// {getServer("271034455462772737")};
+	std::minstd_rand Chooser;
+
 };
