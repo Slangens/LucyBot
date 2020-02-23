@@ -5,14 +5,23 @@ Uses: https://github.com/yourWaifu/sleepy-discord as a library, as well as some 
 Compiled with Visual Studio 2017.
 
 Features: 
--Dynamic server list with individual Role and colour role listing for each server
--colourme function akin to 42's: https://42.rockett.space/bot.html
--Choose command akin to 42's, but with some extra shenanigans
--Logging pings to the owner in a file
--Interactive command line that allows the owner to speak through Lucy and do some user-like stuff in the servers the bot is on, with multiple commands in the shell
--a stock reaction library for her to upload pics from, selfie not included
--some miscellaneous commands
+-Choose command
+-Interactive command line that allows the owner to speak through Lucy and do some user-like stuff in the servers the bot is on (A "marionette")
+
+Dependencies: This program was designed on Windows and rebuilt on Ubuntu 18.04.
+-Cmake 3.10 or newer
+-Libcurl: On ubuntu, this is libcurl4 and libcurl4-openssl-dev plus dependencies.
+-OpenSSL: On ubuntu, use the libssl-dev package plus deps.
+-SleepyDiscord, master branch, statically built with Cmake, Sub dependencies installed by it:
+--CPR, master branch
+--ASIO, 22afb8 branch
+--Websocketpp, master branch
+This was built with g++ 8.4.0 and had no issues. 
+
+Build instructions:
+Use Cmake! CmakeLists have been included. All you need to do to configure is to first write your bot token in the proper place and add some servers in the s1,s2,s3 spots. These server IDs must be ones of servers that the Bot is gonna be on. As this is intended to be small-scale, I do not intend on making this less static.
+Then, simply create a build directory, and use cmake in it to create a makefile. Then, run make. 
 
 Planned for next release: 
--Bugfixes
--Voice connections, maybe even flite integration to generate text-to-speech for voice chat
+-no Bugfixes
+-more features
