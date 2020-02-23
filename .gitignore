@@ -13,3 +13,4 @@ LucyBot_old.cpp
 Ref.hpp
 ServerList.hpp
 CMakeLists2.txt
+CMakeListsLocal.txt
