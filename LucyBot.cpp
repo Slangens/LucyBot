@@ -1,5 +1,5 @@
-//Built with VSCode using G++ 7.3.0
-//Version 2.0.0
+//Built with VSCode using G++ 8.3.0
+//Version 2.0.0 
 //Main LucyBot implementation.
 
 #include "Headers/LucyBot.hpp"
@@ -123,6 +123,12 @@ void LucyClient::onMessage(SleepyDiscord::Message userMessage){
     if(userMessage.startsWith("-Choose") || userMessage.startsWith("-choose")){
         this->sendMessage(userMessage.channelID, userMessage.author.username + ", I choose " + this->Choose(userMessage.content) , this->tts);
     }
+    if(userMessage.startsWith("im")|| userMessage.startsWith("Im")){ // mom jokes. Look up how to make a better case detection.
+        sendMessage(userMessage.channelID,"Hi" + userMessage.content.substr(2,userMessage.length()) + ", I am mom"); 
+    }
+    if(userMessage.startsWith("i'm")|| userMessage.startsWith("I'm")){
+        sendMessage(userMessage.channelID,"Hi" + userMessage.content.substr(3,userMessage.length()) + ", I am mom"); 
+    }
 }
 
 void LucyClient::SafeMessaging(std::string const& message){  //Modification of message sends only in text channels. Use with regards to how often the message happens.
@@ -140,12 +146,12 @@ void LucyClient::ChannelSwitch(){
     std::cout << "Please insert your preferred channel's index. \n" << std::endl;
             
     int indexinput;                                                                         //string to which getline reads and where the index is put into
-                try{
+                /*try{*/
                 std::cin >> indexinput;                                                    //read in index                
                 this->CurrentChannel = this->CurrentServer.channels[indexinput];            //update current channel
-            }catch(std::invalid_argument err) {
+            /*}catch(std::invalid_argument err) {
 				std::cerr << "Invalid argument given: " << err.what() << std::endl;
-                }
+                }*/
 }
 
 void LucyClient::ServerSwitch(){
@@ -156,13 +162,13 @@ void LucyClient::ServerSwitch(){
 
     int indexinput;                                                                         //string to which getline reads and where the index is put into
     bool works=false;        
-            try{
+            //try{
             std::cin >> indexinput;                                                                //read in index    
             this->CurrentServer = this->ServerList[indexinput];                             //Update CurrentServer...
             works=true;
-            }catch(std::invalid_argument err) {
+            /*}catch(std::invalid_argument err) {
 				std::cerr << "Invalid argument given: " << err.what() << std::endl;
-                }
+                }*/
     if(works){
         this->ChannelSwitch();                                                              //Then follow up with a channel switch.
     }
@@ -199,8 +205,8 @@ void LucyClient::CMD(std::string const& input){
 
 
 int main(){
-LucyClient Lucy(BotToken,3);	//threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue														
-std::string line;                           //Create input string
+    LucyClient Lucy(BotToken,3);	//threads normally at 2, at 3 it autocalls run on a seperate thread, allowing main to continue														
+    std::string line;                           //Create input string
 
 
     while(true){                            //Execute input loop infinitely until program quits
