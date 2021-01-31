@@ -9,6 +9,8 @@ unfriended.png
 /Release/
 /build/
 /.vscode/
+/.vs/
+/out/
 LucyBot_old.cpp
 Ref.hpp
 ServerList.hpp
